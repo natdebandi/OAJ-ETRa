@@ -1,0 +1,60 @@
+---
+title: "reporte"
+output: html_document
+date: "2023-09-12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Carga ---- 
+source ("./ETRa_carga.R")
+
+# Funciones ---- 
+source ("./funciones.R")
+
+# Limpieza --- 
+source ("./limpieza.R")
+```
+
+
+## REPORTE 1 ETRA
+
+1. Listado centros
+
+```{r cars}
+etra %>% 
+  group_by(orden,fecha_lugar) %>% 
+    summarise(cantidad=n()) %>% 
+  ungroup() |> 
+  mutate (porcentaje=round(cantidad/sum(cantidad)*100,2)) %>% 
+  arrange (orden) %>% 
+  adorn_totals (where ="row") 
+```
+```{r}
+
+etra_plot<-etra %>%
+  group_by(grupos_edad,Genero_recat) %>%  
+  summarise(n=n()) %>%
+  mutate(freq = n / sum(n) *100)
+
+ggplot(etra_plot, aes(grupos_edad, n, fill = Genero_recat)) +
+ geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label =n),position=position_dodge(width=0.9),
+            vjust=-0.2, size=3) +
+  labs(x="grupos de edad",y= "cantidad") +                 
+  theme_bw(base_size = 12)+  
+  ggtitle("Respuestas por género y edad") +
+  scale_fill_discrete(labels=c('Mujer', 'Otros','Varón'),name = "Género")+
+  scale_colour_brewer(palette = "Set1") +
+  theme_bw()
+
+###GRAFICO EN PROPORCION
+
+
+
+```
+
+
