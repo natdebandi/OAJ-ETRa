@@ -311,3 +311,18 @@ summaryDF <- function(indf) {
   dcast.data.table(cSplit(temp, "N", ":")[!is.na(N_1)],
                    N_1 ~ V2, value.var = "N_2")
 }
+
+cruce_bivariado_con_total <- function (.data,.cruce_x,.cruce_y) 
+{
+  result <-  {{.data}} %>%   
+    group_by({{.cruce_x}}, {{.cruce_y}}) %>%
+    summarise(cantidad = n()) %>%
+    mutate (porcentaje = round(cantidad / sum (cantidad) * 100,2)) |> 
+    bind_rows(
+      {{.data}} %>%
+        group_by({{.cruce_y}}) %>%
+        summarise(cantidad = n()) %>%
+        mutate (porcentaje = round(cantidad / sum (cantidad) * 100,2)) |> 
+        mutate({{.cruce_x}} := "Total"))
+  return (result)
+}
