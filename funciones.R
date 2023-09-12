@@ -326,3 +326,35 @@ cruce_bivariado_con_total <- function (.data,.cruce_x,.cruce_y)
         mutate({{.cruce_x}} := "Total"))
   return (result)
 }
+
+grafico_barras_dos_variables_etiqueta <- function (.data,.x,.y,.ordenX={{.x}},.etiquetas="") 
+{
+  g <- {{.data}} %>% 
+    ggplot(aes(x=reorder({{.x}},{{.ordenX}}),y={{.y}},
+               label={{.etiquetas}}))+
+    geom_bar(position="dodge",stat="identity",fill="#01a2d9")+
+    labs(x="",y="", fill = "") +
+    theme_minimal()+
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+    ) 
+  return (g)
+}
+
+dist_frecuencias_respuesta_multiple <- function (.data) {
+  data_long <- {{.data}} %>% 
+    pivot_longer(everything(), names_to = "nombre", values_to = "valor")
+  # Filtrar valores no NA
+  data_filtered <- data_long %>% filter(!is.na(valor) & valor!="")
+  
+  # Contar las ocurrencias de cada respuesta
+  conteo_respuestas <- data_filtered %>% 
+    count(valor) %>% 
+    mutate (porcentaje = round (n / sum (n) * 100,2))  %>%
+    arrange (-n)
+  return (conteo_respuestas)
+}
+
+
+

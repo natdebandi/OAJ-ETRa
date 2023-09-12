@@ -16,7 +16,10 @@ etra %>%
   mutate (porcentaje=round(cantidad/sum(cantidad)*100,2)) %>% 
   arrange (orden) %>% 
   adorn_totals (where ="row") %>% 
-  gt()
+  gt() %>% 
+  gtsave(data=.,
+         filename="t1.docx",
+         path="./tbl/")
 
 # Gráfico 1. Grupos de Edad según Género ----
 etra %>%
@@ -42,10 +45,10 @@ etra %>%
                                   )+
   coord_flip()+
   theme(legend.position = "bottom")
-
+  
 
 # Gráfico 2. Género según grupos de Edad  ----
-etra %>%
+g1 <- etra %>%
   cruce_bivariado_con_total(.data=.,
                             .cruce_x=grupos_edad,
                             .cruce_y=Genero_recat) %>% 
@@ -69,10 +72,23 @@ etra %>%
                                   .ordenX = grupos_edad
   )+
   coord_flip()+
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom")+
+  scale_fill_jama()+
+  labs(title = "Gráfico 1. Cantidad de adolescentes según Grupos de Edad y Género. AMBA. 2023",
+       caption = "Fuente: Elaboración propia")+
+  theme(plot.title.position = "plot") 
+  
+  
 
+  ggsave (plot=g1,
+          dpi=320,
+          device="tiff",
+          filename="./graphs/g1.tiff")
+  
+  
+  
 # Gráfico 3. Motivos por los que va a la escuela ----
-etra %>% 
+g2 <- etra %>% 
   select (starts_with("q0019")) %>% 
   dist_frecuencias_respuesta_multiple() %>% 
   filter (n >1) %>% 
@@ -90,7 +106,18 @@ etra %>%
                                .ordenX = porcentaje,
                                .etiquetas=etiquetas)+
   geom_bar_text(contrast="FALSE", position = "stack", reflow = TRUE)+
-  coord_flip()
+  coord_flip()+
+  scale_fill_jama()+
+    labs(title = "Gráfico 2. Motivos para asistir a la escuela. AMBA. 2023",
+         caption = "Fuente: Elaboración propia")
+  
+  
+  ggsave (plot=g2,
+          dpi=320,
+          device="tiff",
+          filename="./graphs/g2.tiff")+
+    theme(plot.title.position = "plot")
+    
 
 # Gráfico 4. Tipo de beca  
 etra %>% 
@@ -99,7 +126,7 @@ etra %>%
   # Por ahora hasta acá. Desarrollar 
 
 # Gráfico 5. Tipo de trabajo actual 
- etra %>% 
+g3 <-  etra %>% 
   dist_frecuencias(Trabajo_Previo_recat) %>% 
   mutate (etiquetas = generar_etiquetas(.x1= valid_percent,
                                         .x2= n,
@@ -110,7 +137,18 @@ etra %>%
                                .ordenX = valid_percent,
                                .etiquetas = etiquetas)+
    geom_bar_text(contrast="FALSE", position = "stack", reflow = TRUE)+
-   coord_flip()
+   coord_flip()+
+   scale_fill_jama()+
+   labs(title = "Gráfico 3. Tipo de trabajo realizado (presente y/o previo). AMBA. 2023",
+        caption = "Fuente: Elaboración propia")+
+  theme(plot.title.position = "plot")
+  
+ 
+ 
+ ggsave (plot=g3,
+         dpi=320,
+         device="tiff",
+         filename="./graphs/g3.tiff")
 
  # Gráfico 6. Trabajo y remuneración ----
 etra %>% 
@@ -144,7 +182,7 @@ etra %>%
  # Por ahora hasta acá. Desarrollar 
 
  # Gráfico 10. Sensación que produce ver pasar a la policía. 
- etra %>% 
+ g4 <- etra %>% 
    dist_frecuencias(Sensacion_Policia_recat) |> 
    mutate (etiquetas = generar_etiquetas(.x1= valid_percent,
                                          .x2= n,
@@ -155,7 +193,18 @@ etra %>%
                                           .ordenX = valid_percent,
                                           .etiquetas = etiquetas)+
    geom_bar_text(contrast="FALSE", position = "stack", reflow = TRUE)+
-   coord_flip()
+   coord_flip() +
+   scale_fill_jama()+
+   labs(title = "Gráfico 4.Sensación que produce ver pasar a la policía en el propio barrio. AMBA. 2023",
+        caption = "Fuente: Elaboración propia")+
+   theme(plot.title.position = "plot") 
+   
+ 
+ 
+ ggsave (plot=g4,
+         dpi=320,
+         device="tiff",
+         filename="./graphs/g4.tiff")
 
  # Gráfico 11 Sensación que produce ver pasar a la policía por zona ----
  etra %>%   
@@ -193,7 +242,7 @@ etra %>%
      dist_frecuencias(q0037)
 
 # Gráfico 16. Agentes de discriminación ----   
-   etra %>%   
+   g5 <- etra %>%   
      select (starts_with("q0045")) |> 
      select (-q0045_0012,-q0045_other,
             -q0045_0010,-q0045_0011 ) |> 
@@ -208,7 +257,16 @@ etra %>%
                                             .ordenX = porcentaje,
                                             .etiquetas = etiquetas)+
      geom_bar_text(contrast="FALSE", position = "stack", reflow = TRUE)+
-     coord_flip()
+     coord_flip()+
+     scale_fill_jama()+
+     labs(title = "Gráfico 5. Principales responsables de discriminación a adolescentes. AMBA. 2023",
+          caption = "Fuente: Elaboración propia")+
+     theme(plot.title.position = "plot")
+   
+   ggsave (plot=g5,
+           dpi=320,
+           device="tiff",
+           filename="./graphs/g5.tiff")
   
 #Gráfico 17. Motivos discriminación---- 
    etra |> 
